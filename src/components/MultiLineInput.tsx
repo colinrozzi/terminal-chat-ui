@@ -88,7 +88,7 @@ export function MultiLineInput({
   }, [content, onSubmit, onContentChange, onCursorChange, disabled]);
 
   // Key input handler
-  useInput((input, key) => {
+  useInput((input: string, key: any) => {
     if (disabled) return;
 
     if (key.escape) {

@@ -105,7 +105,7 @@ export function MessageComponent({
 interface ToolMessageProps {
   toolName: string;
   toolArgs: string[];
-  toolDisplayMode: 'minimal' | 'full';
+  toolDisplayMode: 'minimal' | 'full' | 'hidden';
   prefix: string;
 }
 

@@ -11,7 +11,7 @@ import type { KeyboardShortcutsConfig } from '../types/ui.js';
 export function useKeyboardShortcuts(config: KeyboardShortcutsConfig) {
   const { shortcuts, disabled = false } = config;
 
-  useInput((input, key) => {
+  useInput((input: string, key: any) => {
     if (disabled) return;
 
     // Find matching shortcut
