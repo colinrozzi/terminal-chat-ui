@@ -21,7 +21,7 @@ export type {
   MultiLineInputProps,
   SmartInputProps,
   StatusHeaderProps,
-  LoadingSpinnerProps,
+
   HelpPanelProps,
   KeyboardShortcut,
   KeyboardShortcutsConfig

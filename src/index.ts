@@ -9,7 +9,6 @@
 export {
   MessageComponent,
   StatusHeader,
-  LoadingSpinner,
   SimpleInput,
   MultiLineInput,
   SmartInput,
@@ -39,7 +38,7 @@ export type {
   MultiLineInputProps,
   SmartInputProps,
   StatusHeaderProps,
-  LoadingSpinnerProps,
+
   HelpPanelProps,
   KeyboardShortcut,
   KeyboardShortcutsConfig
@@ -65,4 +64,4 @@ export const version = '1.0.0';
 
 // Re-export commonly used external dependencies for convenience
 export { Box, Text, useInput, useApp, render } from 'ink';
-export { useState, useEffect, useCallback, useMemo } from 'react';
+// Note: React hooks should be imported directly from 'react' to avoid conflicts

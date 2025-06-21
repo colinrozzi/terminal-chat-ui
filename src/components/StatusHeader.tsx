@@ -3,8 +3,9 @@
  */
 
 import { Box, Text } from 'ink';
-import Spinner from 'ink-spinner';
 import type { StatusHeaderProps } from '../types/ui.js';
+
+// Note: Spinner should be passed as a prop to avoid React version conflicts
 
 /**
  * Unified status header that shows connection state and context information
@@ -15,7 +16,8 @@ export function StatusHeader({
   setupStatus, 
   setupMessage = '',
   variant = 'default',
-  showSpinner = true
+  showSpinner = true,
+  SpinnerComponent
 }: StatusHeaderProps) {
   
   // Don't show complex header when ready - keep it minimal
@@ -42,7 +44,9 @@ export function StatusHeader({
       {/* Status line with spinner */}
       {setupMessage && (
         <Box>
-          {showSpinner && setupStatus !== 'error' && <Spinner type="dots" />}
+          {showSpinner && setupStatus !== 'error' && (
+            SpinnerComponent ? <SpinnerComponent type="dots" /> : <Text>⏳ </Text>
+          )}
           <Text color={setupStatus === 'error' ? 'red' : 'yellow'}>
             {showSpinner && setupStatus !== 'error' ? ' ' : ''}{setupMessage}
           </Text>
@@ -55,19 +59,4 @@ export function StatusHeader({
 /**
  * Simple loading spinner component
  */
-export function LoadingSpinner({ 
-  message = 'Loading...', 
-  type = 'dots',
-  color = 'yellow'
-}: {
-  message?: string;
-  type?: 'dots' | 'line' | 'bounce';
-  color?: string;
-}) {
-  return (
-    <Box marginBottom={1}>
-      <Spinner type={type} />
-      <Text color={color}> {message}</Text>
-    </Box>
-  );
-}
+// LoadingSpinner removed to avoid React conflicts - use Spinner directly from ink-spinner

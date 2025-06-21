@@ -2,6 +2,7 @@
  * UI-specific types for terminal-chat-ui components
  */
 
+import type { ComponentType } from 'react';
 import type { Message, ToolDisplayMode, InputMode, UIVariant, SetupStatus } from './common.js';
 
 // Props for message components
@@ -53,13 +54,10 @@ export interface StatusHeaderProps {
   setupMessage?: string;
   variant?: UIVariant;
   showSpinner?: boolean;
+  SpinnerComponent?: ComponentType<any>;
 }
 
-export interface LoadingSpinnerProps {
-  message?: string;
-  type?: 'dots' | 'line' | 'bounce';
-  color?: string;
-}
+// LoadingSpinnerProps removed - use Spinner directly from ink-spinner
 
 // Props for help and utility components
 export interface HelpPanelProps {
