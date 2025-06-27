@@ -3,7 +3,7 @@
  */
 
 import { Box, Text, useInput } from 'ink';
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import type { MultiLineInputProps } from '../types/ui.js';
 
 /**
@@ -22,70 +22,107 @@ export function MultiLineInput({
   disabled = false
 }: MultiLineInputProps) {
 
+  // Use internal state if not controlled
+  const [internalContent, setInternalContent] = useState('');
+  const [internalCursorPosition, setInternalCursorPosition] = useState(0);
+
+  // Determine if we're in controlled mode
+  const isControlled = onContentChange !== undefined;
+
+  // Get current values (controlled or uncontrolled)
+  const actualContent = isControlled ? content : internalContent;
+  const actualCursorPosition = isControlled ? cursorPosition : internalCursorPosition;
+
   // Convert content to lines for display
-  const lines = content.split('\n');
-  const isEmpty = content.length === 0;
+  const lines = actualContent.split('\n');
+  const isEmpty = actualContent.length === 0;
 
   // Find cursor row and column
   const getCursorLocation = useCallback((pos: number) => {
-    const beforeCursor = content.slice(0, pos);
+    const beforeCursor = actualContent.slice(0, pos);
     const row = beforeCursor.split('\n').length - 1;
     const lastNewline = beforeCursor.lastIndexOf('\n');
     const col = lastNewline === -1 ? pos : pos - lastNewline - 1;
     return { row, col };
-  }, [content]);
+  }, [actualContent]);
 
-  const { row: cursorRow, col: cursorCol } = getCursorLocation(cursorPosition);
+  const { row: cursorRow, col: cursorCol } = getCursorLocation(actualCursorPosition);
 
   // Text manipulation functions
   const insertText = useCallback((text: string) => {
     if (disabled) return;
-    const before = content.slice(0, cursorPosition);
-    const after = content.slice(cursorPosition);
-    const newContent = before + text + after;
-    const newCursor = cursorPosition + text.length;
 
-    onContentChange?.(newContent);
-    onCursorChange?.(newCursor);
-  }, [content, cursorPosition, onContentChange, onCursorChange, disabled]);
+    const before = actualContent.slice(0, actualCursorPosition);
+    const after = actualContent.slice(actualCursorPosition);
+    const newContent = before + text + after;
+    const newCursor = actualCursorPosition + text.length;
+
+    if (isControlled) {
+      onContentChange?.(newContent);
+      onCursorChange?.(newCursor);
+    } else {
+      setInternalContent(newContent);
+      setInternalCursorPosition(newCursor);
+    }
+  }, [actualContent, actualCursorPosition, onContentChange, onCursorChange, disabled, isControlled]);
 
   const deleteChar = useCallback((direction: 'forward' | 'backward' = 'backward') => {
     if (disabled) return;
-    
-    if (direction === 'backward' && cursorPosition > 0) {
-      const before = content.slice(0, cursorPosition - 1);
-      const after = content.slice(cursorPosition);
-      const newContent = before + after;
-      const newCursor = cursorPosition - 1;
 
-      onContentChange?.(newContent);
-      onCursorChange?.(newCursor);
-    } else if (direction === 'forward' && cursorPosition < content.length) {
-      const before = content.slice(0, cursorPosition);
-      const after = content.slice(cursorPosition + 1);
+    if (direction === 'backward' && actualCursorPosition > 0) {
+      const before = actualContent.slice(0, actualCursorPosition - 1);
+      const after = actualContent.slice(actualCursorPosition);
+      const newContent = before + after;
+      const newCursor = actualCursorPosition - 1;
+
+      if (isControlled) {
+        onContentChange?.(newContent);
+        onCursorChange?.(newCursor);
+      } else {
+        setInternalContent(newContent);
+        setInternalCursorPosition(newCursor);
+      }
+    } else if (direction === 'forward' && actualCursorPosition < actualContent.length) {
+      const before = actualContent.slice(0, actualCursorPosition);
+      const after = actualContent.slice(actualCursorPosition + 1);
       const newContent = before + after;
 
-      onContentChange?.(newContent);
-      // Cursor stays same for forward delete
+      if (isControlled) {
+        onContentChange?.(newContent);
+        // Cursor stays same for forward delete
+      } else {
+        setInternalContent(newContent);
+        // Cursor stays same for forward delete
+      }
     }
-  }, [content, cursorPosition, onContentChange, onCursorChange, disabled]);
+  }, [actualContent, actualCursorPosition, onContentChange, onCursorChange, disabled, isControlled]);
 
   const moveCursor = useCallback((newPos: number) => {
     if (disabled) return;
-    const clampedPos = Math.max(0, Math.min(content.length, newPos));
-    onCursorChange?.(clampedPos);
-  }, [content.length, onCursorChange, disabled]);
+    const clampedPos = Math.max(0, Math.min(actualContent.length, newPos));
+
+    if (isControlled) {
+      onCursorChange?.(clampedPos);
+    } else {
+      setInternalCursorPosition(clampedPos);
+    }
+  }, [actualContent.length, onCursorChange, disabled, isControlled]);
 
   const handleSubmit = useCallback((): void => {
     if (disabled) return;
-    const trimmed = content.trim();
+    const trimmed = actualContent.trim();
     if (trimmed) {
       onSubmit(trimmed);
       // Clear the input after successful submission
-      onContentChange?.('');
-      onCursorChange?.(0);
+      if (isControlled) {
+        onContentChange?.('');
+        onCursorChange?.(0);
+      } else {
+        setInternalContent('');
+        setInternalCursorPosition(0);
+      }
     }
-  }, [content, onSubmit, onContentChange, onCursorChange, disabled]);
+  }, [actualContent, onSubmit, onContentChange, onCursorChange, disabled, isControlled]);
 
   // Key input handler
   useInput((input: string, key: any) => {
@@ -103,40 +140,52 @@ export function MultiLineInput({
         handleSubmit();
         return;
       } else if (mode === 'insert') {
-        // In insert mode, Return adds newline, Ctrl+Return submits
-        if (key.ctrl) {
-          handleSubmit();
-          return;
-        } else {
-          insertText('\n');
-          return;
-        }
+        // In insert mode, Return adds newline
+        insertText('\n');
+        return;
       }
     }
 
-    // Regular characters
+    // Command mode key handling
+    if (mode === 'command') {
+      if (input === 'i') {
+        // 'i' enters insert mode
+        onModeChange?.('insert');
+        return;
+      }
+      // In command mode, ignore most other keys except navigation
+      if (key.leftArrow) {
+        moveCursor(actualCursorPosition - 1);
+        return;
+      }
+      if (key.rightArrow) {
+        moveCursor(actualCursorPosition + 1);
+        return;
+      }
+      // Ignore other input in command mode
+      return;
+    }
+
+    // Insert mode: Regular characters
     if (input && !key.ctrl && !key.meta) {
       insertText(input);
       return;
     }
 
-    // Navigation only works in insert mode
-    if (mode !== 'insert') return;
-
-    // Arrow key navigation
+    // Insert mode only: Arrow key navigation
     if (key.leftArrow) {
-      moveCursor(cursorPosition - 1);
+      moveCursor(actualCursorPosition - 1);
       return;
     }
     if (key.rightArrow) {
-      moveCursor(cursorPosition + 1);
+      moveCursor(actualCursorPosition + 1);
       return;
     }
 
     // Up/down arrow navigation
     if (key.upArrow) {
-      const currentLineStart = content.lastIndexOf('\n', cursorPosition - 1);
-      const prevLineStart = currentLineStart > 0 ? content.lastIndexOf('\n', currentLineStart - 1) : -1;
+      const currentLineStart = actualContent.lastIndexOf('\n', actualCursorPosition - 1);
+      const prevLineStart = currentLineStart > 0 ? actualContent.lastIndexOf('\n', currentLineStart - 1) : -1;
       if (prevLineStart !== -1) {
         const targetCol = cursorCol;
         const prevLineEnd = currentLineStart;
@@ -147,19 +196,19 @@ export function MultiLineInput({
       return;
     }
     if (key.downArrow) {
-      const currentLineEnd = content.indexOf('\n', cursorPosition);
+      const currentLineEnd = actualContent.indexOf('\n', actualCursorPosition);
       if (currentLineEnd !== -1) {
-        const nextLineEnd = content.indexOf('\n', currentLineEnd + 1);
+        const nextLineEnd = actualContent.indexOf('\n', currentLineEnd + 1);
         const targetCol = cursorCol;
         const nextLineStart = currentLineEnd + 1;
-        const nextLineLength = nextLineEnd !== -1 ? nextLineEnd - nextLineStart : content.length - nextLineStart;
+        const nextLineLength = nextLineEnd !== -1 ? nextLineEnd - nextLineStart : actualContent.length - nextLineStart;
         const newPos = nextLineStart + Math.min(targetCol, nextLineLength);
         moveCursor(newPos);
       }
       return;
     }
 
-    // Delete
+    // Delete (insert mode only)
     if (key.backspace || key.delete) {
       deleteChar('backward');
       return;
@@ -179,7 +228,7 @@ export function MultiLineInput({
         paddingRight={1}
         flexDirection="column"
         minHeight={3}
-        width="80%"
+        width="100%"
       >
         <Box flexDirection="column">
           {isEmpty ? (
@@ -202,7 +251,10 @@ export function MultiLineInput({
               return (
                 <Text key={index}>
                   {beforeCursor}
-                  <Text backgroundColor={disabled ? "gray" : "white"} color="black">
+                  <Text
+                    backgroundColor={disabled ? "gray" : (mode === 'command' ? "blue" : "white")}
+                    color={mode === 'command' ? "white" : "black"}
+                  >
                     {atCursor}
                   </Text>
                   {afterCursor}
