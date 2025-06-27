@@ -34,6 +34,11 @@ export function getSetupStatusInfo(status: SetupStatus) {
       color: 'yellow',
       showSpinner: true
     },
+    starting_actor: {
+      message: 'Starting actor...',
+      color: 'yellow',
+      showSpinner: true
+    },
     opening_channel: {
       message: 'Opening communication channel...',
       color: 'yellow',
