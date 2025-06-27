@@ -2,18 +2,18 @@
  * Core types for terminal-chat-ui components
  */
 
-// Common message structure used across all Theater chat interfaces
+// Simplified message structure - no more pending state management
 export interface Message {
-  role: 'user' | 'assistant' | 'system' | 'tool';
+  role: 'user' | 'assistant' | 'system' | 'tool' | 'error';
   content: string;
   timestamp: Date;
-  status: 'pending' | 'complete';
+  status: 'complete'; // Always complete - no more pending
   toolName?: string;
   toolArgs?: string[];
 }
 
 // Setup and connection states
-export type SetupStatus = 'connecting' | 'opening_channel' | 'loading_actor' | 'ready' | 'error';
+export type SetupStatus = 'connecting' | 'starting_actor' | 'opening_channel' | 'loading_actor' | 'ready' | 'error';
 
 // Tool display configuration
 export type ToolDisplayMode = 'hidden' | 'minimal' | 'full';
