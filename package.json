@@ -1,6 +1,6 @@
 {
   "name": "terminal-chat-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shared UI components for terminal-based chat interfaces using Theater actors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
     "prepublishOnly": "bun run build"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
+    "react": "^18.2.0",
     "ink": "^4.4.1",
     "ink-spinner": "^5.0.0"
   },
