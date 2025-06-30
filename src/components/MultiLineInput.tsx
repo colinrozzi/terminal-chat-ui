@@ -3,7 +3,7 @@
  */
 
 import { Box, Text, useInput } from 'ink';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import type { MultiLineInputProps } from '../types/ui.js';
 
 /**
@@ -19,7 +19,8 @@ export function MultiLineInput({
   cursorPosition = 0,
   onContentChange,
   onCursorChange,
-  disabled = false
+  disabled = false,
+  verbose = false
 }: MultiLineInputProps) {
 
   // Use internal state if not controlled
@@ -126,6 +127,9 @@ export function MultiLineInput({
 
   // Key input handler
   useInput((input: string, key: any) => {
+    if (verbose) {
+      console.log('[DEBUG MultiLineInput] Input received:', { input, key, disabled });
+    }
     if (disabled) return;
 
     if (key.escape) {
