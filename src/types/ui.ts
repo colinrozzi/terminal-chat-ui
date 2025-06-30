@@ -35,6 +35,7 @@ export interface MultiLineInputProps {
   onContentChange?: (content: string) => void;
   onCursorChange?: (position: number) => void;
   disabled?: boolean;
+  verbose?: boolean;
 }
 
 export interface SmartInputProps {
