@@ -5,3 +5,4 @@
 export { useKeyboardShortcuts, commonShortcuts } from './useKeyboardShortcuts.js';
 export { useMessageState } from './useMessageState.js';
 export { useTheaterSession } from './useTheaterSession.js';
+export { useInputManager } from './useInputManager.js';
