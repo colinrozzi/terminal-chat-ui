@@ -26,10 +26,3 @@ export type {
   KeyboardShortcutsConfig
 } from './ui.js';
 
-// Input handling types
-export type {
-  KeyEvent,
-  InputHandler,
-  FocusTarget,
-  InputState
-} from './input.js';
