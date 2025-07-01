@@ -21,8 +21,15 @@ export type {
   MultiLineInputProps,
   SmartInputProps,
   StatusHeaderProps,
-
   HelpPanelProps,
   KeyboardShortcut,
   KeyboardShortcutsConfig
 } from './ui.js';
+
+// Input handling types
+export type {
+  KeyEvent,
+  InputHandler,
+  FocusTarget,
+  InputState
+} from './input.js';
