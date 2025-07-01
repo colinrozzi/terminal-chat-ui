@@ -10,6 +10,7 @@ export {
   MessageComponent,
   SimpleInput,
   MultiLineInput,
+  MultiLineInputManaged,
   SmartInput,
   HelpPanel
 } from './components/index.js';
@@ -19,6 +20,7 @@ export {
   useKeyboardShortcuts,
   useMessageState,
   useTheaterSession,
+  useInputManager,
   commonShortcuts
 } from './hooks/index.js';
 
@@ -37,10 +39,13 @@ export type {
   MultiLineInputProps,
   SmartInputProps,
   StatusHeaderProps,
-
   HelpPanelProps,
   KeyboardShortcut,
-  KeyboardShortcutsConfig
+  KeyboardShortcutsConfig,
+  KeyEvent,
+  InputHandler,
+  FocusTarget,
+  InputState
 } from './types/index.js';
 
 // Export all utilities
@@ -64,3 +69,4 @@ export const version = '1.0.0';
 // Re-export commonly used external dependencies for convenience
 export { Box, Text, useInput, useApp, render } from 'ink';
 // Note: React hooks should be imported directly from 'react' to avoid conflicts
+// Ink useInput is exported for legacy compatibility but prefer useInputManager for new code
