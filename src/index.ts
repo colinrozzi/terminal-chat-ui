@@ -10,7 +10,6 @@ export {
   MessageComponent,
   SimpleInput,
   MultiLineInput,
-  MultiLineInputManaged,
   SmartInput,
   HelpPanel
 } from './components/index.js';
@@ -20,7 +19,6 @@ export {
   useKeyboardShortcuts,
   useMessageState,
   useTheaterSession,
-  useInputManager,
   commonShortcuts
 } from './hooks/index.js';
 
@@ -42,10 +40,6 @@ export type {
   HelpPanelProps,
   KeyboardShortcut,
   KeyboardShortcutsConfig,
-  KeyEvent,
-  InputHandler,
-  FocusTarget,
-  InputState
 } from './types/index.js';
 
 // Export all utilities
