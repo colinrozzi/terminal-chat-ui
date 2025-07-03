@@ -92,7 +92,7 @@ export function MessageComponent({
     <Box flexDirection="column" marginBottom={1}>
       {lines.map((line, index) => (
         <Text key={index} color={roleColor}>
-          {index === 0 ? prefix : hasMultipleLines ? '   ' : ''}{line || ' '}
+          {index === 0 ? prefix : ''}{line || ' '}
         </Text>
       ))}
     </Box>
