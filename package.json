@@ -1,6 +1,6 @@
 {
   "name": "terminal-chat-ui",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Shared UI components for terminal-based chat interfaces using Theater actors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
